@@ -1,0 +1,42 @@
+services:
+  kafka:
+    image: docker.io/apache/kafka:4.3.1
+    ports:
+      - "100.64.0.2:9094:9094"
+    environment:
+      KAFKA_HEAP_OPTS: "-Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=64m"
+      KAFKA_JVM_PERFORMANCE_OPTS: >-
+        -server
+        -Xss512k
+        -XX:+UseG1GC
+        -XX:MaxGCPauseMillis=20
+        -XX:InitiatingHeapOccupancyPercent=35
+        -XX:+ExplicitGCInvokesConcurrent
+        -XX:+UseStringDeduplication
+        -XX:+DisableExplicitGC
+        -Djava.awt.headless=true
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: 'INTERNAL://kafka:19094,EXTERNAL://kafka:9094,CONTROLLER://kafka:9093'
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:19094,EXTERNAL://100.64.0.2:9094"
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+    volumes:
+      - ./kafka/data:/var/lib/kafka/data
+    healthcheck:
+      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server kafka:19094 || exit 1" ]
+      interval: 30s
+      timeout: 30s
+      start_period: 120s
+      retries: 5
+
+  kafbat-ui:
+    image: ghcr.io/kafbat/kafka-ui:0c481c0
+    ports:
+      - '127.0.0.1:1450:8080'
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true
+    volumes:
+      - ~/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
