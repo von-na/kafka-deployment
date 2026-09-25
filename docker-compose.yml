@@ -41,10 +41,13 @@ services:
     environment:
       DYNAMIC_CONFIG_ENABLED: true
     volumes:
-      - /etc/kafkaui/dynamic_config.yaml
+      - kafbat-config:/etc/kafkaui
     healthcheck:
       test: [ "CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/actuator/health || exit 1" ]
       interval: 10s
       timeout: 5s
       start_period: 30s
       retries: 5
+
+volumes:
+  kafbat-config:
