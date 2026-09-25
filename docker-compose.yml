@@ -26,7 +26,7 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
     volumes:
-      - ./kafka/data:/var/lib/kafka/data
+      - /home/dungeon-master/kafka/data:/var/lib/kafka/data
     healthcheck:
       test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server kafka:19094 || exit 1" ]
       interval: 30s
@@ -41,4 +41,10 @@ services:
     environment:
       DYNAMIC_CONFIG_ENABLED: true
     volumes:
-      - /home/dungeon-master/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
+      - /etc/kafkaui/dynamic_config.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/actuator/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
