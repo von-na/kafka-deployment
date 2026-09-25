@@ -2,7 +2,8 @@ services:
   kafka:
     image: docker.io/apache/kafka:4.3.1
     ports:
-      - "100.64.0.2:9094:9094"
+      - "10.0.0.1:9094:9094"
+      - "100.64.0.2:9095:9095"
     environment:
       KAFKA_HEAP_OPTS: "-Xms384m -Xmx384m -XX:MaxMetaspaceSize=96m -XX:ReservedCodeCacheSize=64m"
       KAFKA_JVM_PERFORMANCE_OPTS: >-
@@ -17,12 +18,13 @@ services:
         -Djava.awt.headless=true
       KAFKA_NODE_ID: 1
       KAFKA_BROKER_ID: 1
-      KAFKA_LISTENERS: 'INTERNAL://kafka:19094,EXTERNAL://kafka:9094,CONTROLLER://kafka:9093'
-      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:19094,EXTERNAL://100.64.0.2:9094"
+      KAFKA_LISTENERS: "DOCKER://0.0.0.0:19094,HOST://0.0.0.0:9094,TAILSCALE://0.0.0.0:9095,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "DOCKER://kafka:19094,HOST://10.0.0.1:9094,TAILSCALE://100.64.0.2:9095"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "DOCKER:PLAINTEXT,HOST:PLAINTEXT,TAILSCALE:PLAINTEXT,CONTROLLER:PLAINTEXT"
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
     volumes:
       - ./kafka/data:/var/lib/kafka/data
     healthcheck:
