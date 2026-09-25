@@ -41,4 +41,4 @@ services:
     environment:
       DYNAMIC_CONFIG_ENABLED: true
     volumes:
-      - ~/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
+      - /home/dungeon-master/kui/config.yml:/etc/kafkaui/dynamic_config.yaml
