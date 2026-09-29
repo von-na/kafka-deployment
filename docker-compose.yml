@@ -26,7 +26,7 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
-      - /home/dungeon-master/kafka/data:/var/lib/kafka/data
+      - kafka-data:/var/lib/kafka/data
     healthcheck:
       test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server kafka:19094 || exit 1" ]
       interval: 30s
@@ -50,4 +50,5 @@ services:
       retries: 5
 
 volumes:
+  kafka-data:
   kafbat-config:
